@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  cracking-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cs6675-cracking
+    volumes:
+      - ./data:/app/data
+      - ./res:/app/res
+    stdin_open: true
+    tty: true
+
+  experiment:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cs6675-experiment
+    volumes:
+      - ./data:/app/data
+      - ./res:/app/res
+    entrypoint: ["/bin/bash", "./run.sh"]
+
+
+  test-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cs6675-test-engine
+    command: ["./distributed/build/test_engine"]

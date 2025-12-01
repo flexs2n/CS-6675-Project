@@ -1,0 +1,178 @@
+syntax = "proto3";
+
+package crackstore;
+
+
+
+// Empty message for simple RPCs
+message Empty {}
+
+// Status response for operations
+message StatusResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Statistics from a cracking query
+message QueryStats {
+    int32 tuples_touched = 1;
+    int32 cracks_used = 2;
+    double query_time_ms = 3;
+}
+
+
+
+// Request to load column data into a storage node
+message LoadColumnRequest {
+    string column_name = 1;
+    repeated int32 data = 2;
+}
+
+message LoadColumnResponse {
+    bool success = 1;
+    int32 rows_loaded = 2;
+    string node_id = 3;
+}
+
+// Request to execute a range query on a storage node
+message RangeQueryRequest {
+    string column_name = 1;
+    int32 low = 2;
+    int32 high = 3;
+}
+
+message RangeQueryResponse {
+    int32 count = 1;
+    string node_id = 2;
+    QueryStats stats = 3;
+    // Optional: return actual values (for small result sets)
+    repeated int32 values = 4;
+    bool success = 5;
+    string error_message = 6;
+}
+
+// Get information about a storage node
+message NodeInfoRequest {}
+
+message NodeInfoResponse {
+    string node_id = 1;
+    repeated string columns = 2;
+    int32 total_rows = 3;
+    int32 total_cracks = 4;
+    bool is_healthy = 5;
+}
+
+
+
+// Storage node registration with coordinator
+message RegisterNodeRequest {
+    string address = 1;
+    int32 port = 2;
+}
+
+message RegisterNodeResponse {
+    bool success = 1;
+    string assigned_node_id = 2;
+    string message = 3;
+}
+
+// Heartbeat to keep node alive
+message HeartbeatRequest {
+    string node_id = 1;
+}
+
+message HeartbeatResponse {
+    bool acknowledged = 1;
+}
+
+// Client requests coordinator to load data (coordinator distributes to nodes)
+message DistributedLoadRequest {
+    string column_name = 1;
+    string data_file_path = 2;  // Path to binary data file
+    int32 num_partitions = 3;   // How many nodes to distribute across (0 = all)
+}
+
+message DistributedLoadResponse {
+    bool success = 1;
+    int32 total_rows = 2;
+    int32 nodes_used = 3;
+    repeated string node_ids = 4;
+    string message = 5;
+}
+
+// Client requests a distributed range query
+message DistributedRangeQueryRequest {
+    string column_name = 1;
+    int32 low = 2;
+    int32 high = 3;
+    bool return_values = 4;  // If true, return actual values (expensive)
+}
+
+message DistributedRangeQueryResponse {
+    int32 total_count = 1;
+    int32 nodes_queried = 2;
+    repeated NodeQueryResult node_results = 3;
+    double total_time_ms = 4;
+    bool success = 5;
+    string error_message = 6;
+}
+
+// Per-node result in distributed query
+message NodeQueryResult {
+    string node_id = 1;
+    int32 count = 2;
+    QueryStats stats = 3;
+    repeated int32 values = 4;  // Only if return_values was true
+}
+
+// Get cluster status
+message ClusterStatusRequest {}
+
+message ClusterStatusResponse {
+    int32 total_nodes = 1;
+    int32 healthy_nodes = 2;
+    repeated NodeStatus nodes = 3;
+}
+
+message NodeStatus {
+    string node_id = 1;
+    string address = 2;
+    int32 port = 3;
+    bool is_healthy = 4;
+    int64 last_heartbeat_ms = 5;
+    repeated string columns = 6;
+}
+
+
+// Service exposed by each Storage Node
+service StorageService {
+    // Load column data into this node
+    rpc LoadColumn(LoadColumnRequest) returns (LoadColumnResponse);
+    
+    // Execute a range query using cracking
+    rpc RangeQuery(RangeQueryRequest) returns (RangeQueryResponse);
+    
+    // Get node information
+    rpc GetNodeInfo(NodeInfoRequest) returns (NodeInfoResponse);
+    
+    // Health check
+    rpc HealthCheck(Empty) returns (StatusResponse);
+}
+
+// Service exposed by the Coordinator
+service CoordinatorService {
+    // Storage node registration
+    rpc RegisterNode(RegisterNodeRequest) returns (RegisterNodeResponse);
+    
+    // Storage node heartbeat
+    rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    
+    // Client: Load data distributed across nodes
+    rpc LoadData(DistributedLoadRequest) returns (DistributedLoadResponse);
+    
+    // Client: Execute distributed range query
+    rpc RangeQuery(DistributedRangeQueryRequest) returns (DistributedRangeQueryResponse);
+    
+    // Client: Get cluster status
+    rpc GetClusterStatus(ClusterStatusRequest) returns (ClusterStatusResponse);
+}
