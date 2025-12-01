@@ -407,7 +407,6 @@ engine.remove(5);
 |---------|------|-------------|
 | `uniform_100M. data` | 100M integers | Uniform random distribution |
 | `skewed_100M.data` | 100M integers | Zipfian distribution (α=1.0) |
-| `skyserver. data` | 585M integers | Real astronomical data |
 
 ### Generating Test Data
 
@@ -485,8 +484,6 @@ crackstore/
 └── README.md                     # This file
 ```
 
-## Research Background
-
 CrackStore is based on the following research:
 
 ### Database Cracking
@@ -544,40 +541,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 The original scrack implementation is used under its original license terms. 
 
-## Citation
-
-If you use CrackStore in your research, please cite:
-
-```bibtex
-@inproceedings{crackstore2024,
-  title={CrackStore: Distributed Columnar Storage with Adaptive Indexing},
-  author={Author Names},
-  booktitle={Proceedings of Conference Name},
-  year={2024}
-}
-```
-
-Also cite the original database cracking papers:
-
-```bibtex
-@inproceedings{idreos2007database,
-  title={Database Cracking},
-  author={Idreos, Stratos and Kersten, Martin L and Manegold, Stefan},
-  booktitle={CIDR},
-  pages={68--78},
-  year={2007}
-}
-
-@article{halim2012stochastic,
-  title={Stochastic Database Cracking: Towards Robust Adaptive Indexing in Main-Memory Column-Stores},
-  author={Halim, Felix and Idreos, Stratos and Karras, Panagiotis and Yap, Roland HC},
-  journal={Proceedings of the VLDB Endowment},
-  volume={5},
-  number={6},
-  pages={502--513},
-  year={2012}
-}
-```
 
 ## Acknowledgments
 
