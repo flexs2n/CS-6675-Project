@@ -1,10 +1,5 @@
 # CrackStore: Distributed Columnar Storage with Adaptive Indexing
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen. svg)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
-[![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)]()
-[![gRPC](https://img.shields. io/badge/gRPC-1.51-orange.svg)]()
-
 CrackStore is a distributed columnar store that brings **adaptive indexing** (database cracking) to distributed environments. Unlike traditional indexing approaches that require upfront index construction, CrackStore automatically optimizes data organization based on query patterns, achieving self-tuning behavior without administrator intervention.
 
 ## Table of Contents
